@@ -1,6 +1,26 @@
 {% extends "base.html" %}
 <!-- 여러가지 필터를 사용 가능 -->
 {% load humanize %}
+{% block header %}
+<script>
+    function product_detail(id) {  // 마우스를 올리면 팝업 띄우기 함수
+        $.ajax({
+            url: "/api/product/" + id,
+            success: function (result) {
+                $("#product-" + id).popover({
+                    html: true,
+                    content: result.name + "<br/>" + result.price
+                }).popover("show");
+            }
+        });
+    }
+    function product_leave(id) {  // 마우스를 치우면 팝업 없애기 함수
+        $("#product-" + id).popover("hide");
+    }
+    $(document).ready(function () {  // 현재 페이지 로딩이 완료가 됬을때 함수를 호출
+    });
+</script>
+{% endblock %}
 {% block contents %}
 <div class="row mt-5">
     <div class="col-12">
@@ -18,7 +38,9 @@
                 <tr>
                     <th scope="row">{{ product.id }}</th>
                     <!-- 상품명에 상세보기 링크 연결 -->
-                    <th><a href="/product/{{ product.id }}">{{ product.name }}</a></th>
+                    <th><a id="product-{{ product.id }}" onmouseenter="product_detail({{ product.id }});"
+                            onmouseleave="product_leave({{ product.id }});"
+                            href="/product/{{ product.id }}">{{ product.name }}</a></th>
                     <th>{{ product.price|intcomma }} 원</th>
                     <th>{{ product.register_date|date:"Y-m-d H:i" }}</th>
                 </tr>
